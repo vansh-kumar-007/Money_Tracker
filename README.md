@@ -18,5 +18,5 @@ This is a simple Personal Finance Tracker application built in Python using `tki
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/personal-finance-tracker.git
+   git clone [https://github.com/yourusername/personal-finance-tracker.git](https://github.com/vansh-kumar-007/Money_Tracker.git)
    cd personal-finance-tracker
