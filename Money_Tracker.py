@@ -5,11 +5,11 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-# Initialize SQLite database
+
 conn = sqlite3.connect('finance_tracker.db')
 c = conn.cursor()
 
-# Create table if not exists
+
 c.execute('''CREATE TABLE IF NOT EXISTS transactions (
              id INTEGER PRIMARY KEY AUTOINCREMENT,
              date TEXT,
@@ -21,14 +21,14 @@ c.execute('''CREATE TABLE IF NOT EXISTS transactions (
 conn.commit()
 conn.close()
 
-# GUI Class
+
 class FinanceTrackerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Personal Finance Tracker")
         self.root.geometry("900x600")
 
-        # Initialize components
+        
         self.label_title = tk.Label(self.root, text="Personal Finance Tracker", font=("Arial", 24))
         self.label_title.pack(pady=20)
 
@@ -67,16 +67,16 @@ class FinanceTrackerApp:
 
         self.plot_data()
 
-        # Initialize balance on startup
+        
         self.refresh_balance()
 
     def add_transaction(self):
-        # Create a new window for adding transactions
+        
         self.add_window = tk.Toplevel(self.root)
         self.add_window.title("Add Transaction")
         self.add_window.geometry("400x300")
 
-        # Labels and Entry fields
+        
         tk.Label(self.add_window, text="Category:").pack()
         self.entry_category = tk.Entry(self.add_window)
         self.entry_category.pack()
@@ -92,7 +92,7 @@ class FinanceTrackerApp:
         tk.Button(self.add_window, text="Add", command=self.save_transaction).pack()
 
     def save_transaction(self):
-        # Validate inputs
+        
         category = self.entry_category.get()
         amount = self.entry_amount.get()
         transaction_type = self.entry_type.get()
@@ -107,11 +107,11 @@ class FinanceTrackerApp:
             messagebox.showerror("Error", "Amount must be a number")
             return
 
-        # Insert transaction into database
+        
         conn = sqlite3.connect('finance_tracker.db')
         c = conn.cursor()
 
-        user_id = 1  # Assuming single user for simplicity
+        user_id = 1  
 
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         c.execute("INSERT INTO transactions (date, category, amount, type, user_id) VALUES (?, ?, ?, ?, ?)",
@@ -119,36 +119,36 @@ class FinanceTrackerApp:
         conn.commit()
         conn.close()
 
-        # Close the add window and update UI
+        
         self.add_window.destroy()
         self.refresh_balance()
         self.view_transactions()
 
     def view_transactions(self):
-        # Clear listbox first
+        
         self.listbox_transactions.delete(0, tk.END)
 
-        # Fetch and display transactions
+        
         conn = sqlite3.connect('finance_tracker.db')
         c = conn.cursor()
 
-        user_id = 1  # Assuming single user for simplicity
+        user_id = 1  
 
         c.execute("SELECT * FROM transactions WHERE user_id=? ORDER BY date DESC", (user_id,))
         transactions = c.fetchall()
 
         conn.close()
 
-        # Display transactions in listbox
+        
         for transaction in transactions:
             self.listbox_transactions.insert(tk.END, f"{transaction[1]} - {transaction[3]} ({transaction[4]})")
 
     def generate_report(self):
-        # Generate and display a simple report using matplotlib
+        
         conn = sqlite3.connect('finance_tracker.db')
         c = conn.cursor()
 
-        user_id = 1  # Assuming single user for simplicity
+        user_id = 1  
 
         c.execute("SELECT type, SUM(amount) FROM transactions WHERE user_id=? GROUP BY type", (user_id,))
         data = c.fetchall()
@@ -165,30 +165,30 @@ class FinanceTrackerApp:
             ax.set_ylabel('Amount ($)')
             ax.set_title('Expense vs. Income')
 
-            # Embedding plot into tkinter GUI
+            
             self.plot_widget = FigureCanvasTkAgg(fig, master=self.canvas)
             self.plot_widget.draw()
             self.plot_widget.get_tk_widget().pack()
 
     def plot_data(self):
-        # Example plot (replace with actual data from SQLite database)
+        
         fig, ax = plt.subplots(figsize=(6, 4))
         labels = ['Expenses', 'Income', 'Savings']
         sizes = [25, 45, 30]
         ax.pie(sizes, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
-        ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        ax.axis('equal')  
 
-        # Embedding plot into tkinter GUI
+        
         self.plot_widget = FigureCanvasTkAgg(fig, master=self.canvas)
         self.plot_widget.draw()
         self.plot_widget.get_tk_widget().pack()
 
     def refresh_balance(self):
-        # Calculate and display balance
+        
         conn = sqlite3.connect('finance_tracker.db')
         c = conn.cursor()
 
-        user_id = 1  # Assuming single user for simplicity
+        user_id = 1  
 
         c.execute("SELECT SUM(amount) FROM transactions WHERE user_id=? AND type='Income'", (user_id,))
         income = c.fetchone()[0] or 0
@@ -202,7 +202,7 @@ class FinanceTrackerApp:
         self.label_balance.config(text=f"Balance: ${balance:.2f}")
 
 
-# Main function to start the application
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = FinanceTrackerApp(root)
